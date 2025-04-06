@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Health</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white h-screen flex justify-center items-center">
+  <div class="max-w-screen-sm w-full px-6 flex flex-col justify-center items-center text-center">
+    <!-- Image -->
+    <div class="rounded-full overflow-hidden w-40 h-40 mb-8">
+      <img src="https://www.experian.com/blogs/healthcare/wp-content/uploads/2025/03/patient-billing-and-collection.jpg" alt="Doctor holding phone" class="object-cover w-full h-full">
+    </div>
+    <!-- App Name -->
+    <h1 class="text-3xl font-bold text-indigo-600 mb-2">Smart Health</h1>
+    <!-- Subheader -->
+    <h2 class="text-lg font-semibold text-black mb-1">Your Personal Healthcare Companion</h2>
+    <!-- Supporting text -->
+    <p class="text-sm text-gray-500 mb-10">
+      Track your health, and connect with<br>
+      healthcare providers in one place.
+    </p>
+    <!-- Get Started Button -->
+    <a href="{% url 'signin' %}" class="w-full">
+      <button class="bg-indigo-600 text-white text-sm font-semibold w-full py-3 rounded-full">
+        Get Started
+      </button>
+    </a>
+  </div>
+</body>
+</html>

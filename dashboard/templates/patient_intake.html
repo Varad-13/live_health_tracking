@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Intake Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white h-screen flex items-start justify-center">
+  <div class="max-w-screen-sm w-full px-6 pt-10 pb-32 overflow-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-1">
+      <h1 class="text-2xl font-bold">Patient Intake Form</h1>
+      <!-- Non-intrusive "I am a doctor" button -->
+      <a href="{% url 'doctor_intake' %}" class="text-sm text-indigo-600 hover:underline">
+        I am a doctor
+      </a>
+    </div>
+    <p class="text-sm text-gray-500 mb-6">Please fill out the form below to continue.</p>
+
+    <!-- Display Django Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+          <span class="block sm:inline">{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Patient Intake Form -->
+    <form id="patient-form" action="{% url 'patient_intake' %}" method="POST" class="flex flex-col space-y-4">
+      {% csrf_token %}
+      <!-- Full Name -->
+      <input type="text" name="full_name" placeholder="Full name*" required
+             class="w-full px-5 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      
+      <!-- Age -->
+      <input type="number" name="age" placeholder="Age*" required
+             class="w-full px-5 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      
+      <!-- Phone -->
+      <input type="tel" name="phone" placeholder="Phone number"
+             class="w-full px-5 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      
+      <!-- Hospital Affiliation -->
+      <input type="text" name="hospital_affiliation" placeholder="Hospital Affiliation*" required
+             class="w-full px-5 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+        <label class="block text-sm text-gray-700 mb-2">Gender</label>
+        <div class="flex gap-3">
+        <label class="cursor-pointer">
+            <input type="radio" name="gender" value="Female" class="hidden peer" required>
+            <span class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-indigo-50 active:bg-indigo-600 active:text-white">Female</span>
+        </label>
+        <label class="cursor-pointer">
+            <input type="radio" name="gender" value="Male" class="hidden peer">
+            <span class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-indigo-50 active:bg-indigo-600 active:text-white">Male</span>
+        </label>
+        <label class="cursor-pointer">
+            <input type="radio" name="gender" value="Other" class="hidden peer">
+            <span class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-indigo-50 active:bg-indigo-600 active:text-white">Other</span>
+        </label>
+        </div>
+      
+    </form>
+  </div>
+
+  <!-- Sticky Submit Button -->
+  <div class="max-w-screen-sm w-full fixed bottom-0 px-6 py-4 bg-gray-50">
+    <div class="absolute top-0 left-0 right-0 h-3 sm:hidden" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent);"></div>
+
+    <button type="submit" form="patient-form"
+            class="w-full py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-md hover:bg-indigo-700 transition">
+      Submit Form
+    </button>
+  </div>
+</body>
+</html>
