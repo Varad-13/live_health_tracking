@@ -9,6 +9,7 @@ from django.contrib import messages
 from datetime import datetime
 from .models import *
 from collections import defaultdict
+import joblib
 
 import numpy as np
 
@@ -18,7 +19,9 @@ from tensorflow.keras.models import load_model
 
 cred_path = os.path.join(settings.BASE_DIR, 'esp32-c093e-firebase-adminsdk-fbsvc-e921972cd0.json')
 model_path = os.path.join(settings.BASE_DIR, 'risk_classifier_model.h5')
+scaler_path = os.path.join(settings.BASE_DIR, 'risk_scaler.pkl')
 
+scaler = joblib.load(scaler_path)
 cred = credentials.Certificate(cred_path)
 model = load_model(model_path)
 
@@ -169,17 +172,20 @@ def patient_dashboard(request):
         return render(request, 'vitals.html')
 
     # Extract vitals
-    heart_rate = data.get("HeartBit", 0)
-    oxygen_saturation = data.get("Oximeter", 0)
-    temperature = data.get("Temperature", 0)
+    heart_rate = data.get("HeartBit", random.randint(60, 120))
+    oxygen_saturation = data.get("Oximeter", random.randint(95, 100))
+    temperature = data.get("Temperature", random.randint(36, 37))
     systolic = random.randint(110, 130)
     diastolic = random.randint(70, 90)
     blood_pressure = f"{systolic}/{diastolic}"
 
-    # Prepare input data for the risk prediction model
+    # Prepare input data for risk prediction
     input_data = np.array([[heart_rate, temperature, oxygen_saturation]])
-    prediction = model.predict(input_data)
-    model_risk_label = "High Risk" if prediction[0] > 0.5 else "Normal"
+    input_scaled = scaler.transform(input_data)
+
+    # Predict
+    prediction = model.predict(input_scaled)
+    model_risk_label = "High Risk" if prediction[0][0] > 0.5 else "Normal"
 
     VitalSign.objects.create(
         patient=request.user.patient_profile,
@@ -212,20 +218,23 @@ def vitals_data(request):
     if not isinstance(data, dict):
         return JsonResponse({"error": "No valid data found"}, status=400)
 
-    # Extract vitals from the live data
-    heart_rate = data.get("HeartBit", 0)
-    oxygen_saturation = data.get("Oximeter", 0)
-    temperature = data.get("Temperature", 0)
+    # Extract vitals from the live data or simulate fallback values
+    heart_rate = data.get("HeartBit", random.randint(60, 120))
+    oxygen_saturation = data.get("Oximeter", random.randint(95, 100))
+    temperature = data.get("Temperature", random.randint(36, 37))
+
     systolic = random.randint(110, 130)
     diastolic = random.randint(70, 90)
     blood_pressure = f"{systolic}/{diastolic}"
 
-    # Prepare input for risk prediction
-    input_data = np.array([[heart_rate, temperature, oxygen_saturation]])
-    prediction = model.predict(input_data)
-    model_risk_label = "High Risk" if prediction[0] > 0.5 else "Normal"
+    # Prepare input and scale it
+    input_data = np.array([[temperature, heart_rate, oxygen_saturation]])
+    input_scaled = scaler.transform(input_data)
 
-    # Return the data as JSON
+    # Predict
+    prediction = model.predict(input_scaled)
+    model_risk_label = "High Risk" if prediction[0][0] > 0.5 else "Normal"
+
     return JsonResponse({
         "heart_rate": heart_rate,
         "oxygen_saturation": oxygen_saturation,
@@ -280,19 +289,21 @@ def doctor_patient_dashboard(request, patient_id):
         return render(request, 'vitals.html')
 
     # Extract vitals from Firebase data
-    heart_rate = data.get("HeartBit", 0)
-    oxygen_saturation = data.get("Oximeter", 0)
-    temperature = data.get("Temperature", 0)
+    heart_rate = data.get("HeartBit", random.randint(60, 120))
+    oxygen_saturation = data.get("Oximeter", random.randint(95, 100))
+    temperature = data.get("Temperature", random.randint(36, 37))
     systolic = random.randint(110, 130)
     diastolic = random.randint(70, 90)
     blood_pressure = f"{systolic}/{diastolic}"
 
     # Prepare input data for risk prediction
     input_data = np.array([[heart_rate, temperature, oxygen_saturation]])
-    prediction = model.predict(input_data)
-    model_risk_label = "High Risk" if prediction[0] > 0.5 else "Normal"
+    input_scaled = scaler.transform(input_data)
 
-    # Save a new measurement for this patient
+    # Predict
+    prediction = model.predict(input_scaled)
+    model_risk_label = "High Risk" if prediction[0][0] > 0.5 else "Normal"
+
     VitalSign.objects.create(
         patient=patient,
         heart_rate=heart_rate,

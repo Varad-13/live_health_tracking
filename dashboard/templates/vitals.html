@@ -67,7 +67,7 @@
               <p class="text-sm text-gray-400">{{ measurement.timestamp|date:"D, g:i A" }}
                 <span>
                   {% if measurement.ipfs_hash %}
-                  <a href="https://gateway.pinata.cloud/ipfs/{{ measurement.ipfs_hash }}" class="text-sm text-blue-400 hover:underline">IPFS Hash: {{ measurement.ipfs_hash|slice:":6" }}</a>      
+                  <a href="https://gateway.pinata.cloud/ipfs/{{ measurement.ipfs_hash }}" class="text-sm text-gray-600 hover:underline">IPFS Hash: <span class="text-indigo-800">{{ measurement.ipfs_hash|slice:":6" }}</span></a>      
                   {% endif %} 
                 </span>
               </p>
@@ -102,7 +102,7 @@
             console.error("Error:", data.error);
             return;
           }
-          document.getElementById("temperature-value").textContent = data.temperature + " °F";
+          document.getElementById("temperature-value").textContent = data.temperature + " °C";
           document.getElementById("heart-rate-value").textContent = data.heart_rate + " BPM";
           document.getElementById("blood-pressure-value").textContent = data.blood_pressure;
           document.getElementById("oxygen-saturation-value").textContent = data.oxygen_saturation + " %";
@@ -112,7 +112,7 @@
     }
 
     // Update vitals every 10 seconds
-    setInterval(updateVitals, 10000);
+    setInterval(updateVitals, 3000);
   </script>
 </body>
 </html>
